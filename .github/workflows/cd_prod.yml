@@ -1,0 +1,52 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  redeploy_everything:
+    name: Deploying everything to the production cluster
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup SSH key
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key
+          chmod 600 ssh_key
+
+      - name: Deploy to production server
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ssh_key ubuntu@98.90.206.211 << 'EOF'
+            echo "Deploying to production server..."
+
+            # Go to the correct project directory
+            cd /home/ubuntu/CICD-1 || exit 1
+
+            # Load Node & pnpm environment
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+            export PATH=$PATH:$HOME/.npm-global/bin:/usr/local/bin
+
+            # Check Node and pnpm versions
+            node -v
+            pnpm -v
+
+            # Pull latest production code
+            git pull origin production
+
+            # Install dependencies & build
+            pnpm install
+            pnpm run build
+
+            # Restart all PM2 processes
+            pm2 restart fe-server || pm2 start fe-server --name fe-server
+            pm2 restart http-server || pm2 start http-server --name http-server
+            pm2 restart ws-server || pm2 start ws-server --name ws-server
+
+            echo "✅ Production deployment completed!"
+          EOF
