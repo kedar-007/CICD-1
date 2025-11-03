@@ -1,23 +1,32 @@
+
 name: Deploy to staging
 on:
   push:
     branches:
-      - "main"
+      - main
 
 jobs:
   redeploy_everything:
     name: Deploying everything to the staging cluster
+    runs-on: ubuntu-latest
 
     steps:
-      - name: SSH into the server
-      - run: |
-          echo ${{secrets.SSH_PRIVATE_KEY}} &> ~/ssh_key
-          ssh -i ~/ssh_key root@54.221.36.
-          cd CICD-1/ && git pull
-          pnpm install
-          pnpm run build
-          pm2 restart fe-server
-          pm2 restart http-server
-          pm2 restart ws-server
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
+      - name: Setup SSH key
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key
+          chmod 600 ssh_key
 
+      - name: Deploy to staging server
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ssh_key root@54.221.36.146 << 'EOF'
+            cd /root/CICD-1/
+            git pull
+            pnpm install
+            pnpm run build
+            pm2 restart fe-server
+            pm2 restart http-server
+            pm2 restart ws-server
+          EOF
