@@ -1,5 +1,6 @@
 
 import { prismaClient } from "@repo/db/client";
+import { WebSocketServer } from 'ws';
 
 
 export default async function Home() {
@@ -11,7 +12,7 @@ export default async function Home() {
       {user?.password}
       <br />
       <div>
-      <h1 style={{ color: 'red', fontSize: '24px' }}>Added the CI CD configuration</h1>
+      <h1 style={{ color: 'red', fontSize: '24px' }}>Added the CI CD configuration - This is running on the production server</h1>
       </div>
     </div>
   );
