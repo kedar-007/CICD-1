@@ -11,7 +11,7 @@ export default async function Home() {
       {user?.password}
       <br />
       <div>
-        hi there
+        hi there seems to deployed
       </div>
     </div>
   );
