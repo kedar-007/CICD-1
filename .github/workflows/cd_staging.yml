@@ -21,7 +21,7 @@ jobs:
 
       - name: Deploy to staging server
         run: |
-          ssh -o StrictHostKeyChecking=no -i ssh_key root@54.221.36.146 << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i ssh_key ubuntu@54.221.36.146 << 'EOF'
             cd /root/CICD-1/
             git pull
             pnpm install
