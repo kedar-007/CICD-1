@@ -11,7 +11,7 @@ export default async function Home() {
       {user?.password}
       <br />
       <div>
-      <h1 style={{ color: 'red', fontSize: '24px' }}>Added the CI CD configuration</h1>
+      <h1 style={{ color: 'red', fontSize: '24px' }}>Added the CI CD configuration this is the dev server</h1>
       </div>
     </div>
   );
